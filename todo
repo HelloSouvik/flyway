@@ -8,3 +8,34 @@ https://www.weave.works/technologies/kubernetes-on-aws/
 https://catalog.us-east-1.prod.workshops.aws/workshops/4eab6682-09b2-43e5-93d4-1f58fd6cff6e/en-US/devopspipeline/ekswithec2
 https://www.stacksimplify.com/course-presentations/aws-eks-kubernetes-masterclass-devops-microservices.pdf
 https://blog.developer.adobe.com/designing-a-kubernetes-cluster-with-amazon-eks-from-scratch-4b4ee9d1b8f
+
+
+#!/bin/bash
+
+# Replace this with the actual endpoint URL
+ENDPOINT_URL="https://example.com/your-endpoint"
+
+# Use curl to retrieve the comma-separated list of IP addresses
+IP_LIST=$(curl -s "$ENDPOINT_URL")
+
+# Check if curl was successful in fetching the IP list
+if [ $? -ne 0 ]; then
+  echo "Failed to retrieve IP list from the endpoint."
+  exit 1
+fi
+
+# Split the comma-separated list into an array
+IFS=',' read -ra IP_ARRAY <<< "$IP_LIST"
+
+# Iterate through the array of IP addresses and ping each one
+for IP in "${IP_ARRAY[@]}"; do
+  # Use ping to check the reachability of the IP
+  ping -c 3 "$IP" >/dev/null 2>&1
+
+  # Check the exit status of ping
+  if [ $? -eq 0 ]; then
+    echo "$IP is reachable."
+  else
+    echo "$IP is not reachable."
+  fi
+done
